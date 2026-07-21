@@ -11,6 +11,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  //eslint-disable-next-line
   const responseGoogle = async (authResult: any) => {
     setLoading(true);
     try {
@@ -57,7 +58,11 @@ const Login = () => {
             {loading ? "Signing in..." : "Continue with Google"}
           </button>
 
-          <p className="text-center text-xs text-gray-400">By continuing, you agree with our {" "} <span className="text-[#E23774]">Terms of Service</span> & <span className="text-[#E23774]">Privacy Policy</span></p>
+          <p className="text-center text-xs text-gray-400">
+            By continuing, you agree with our{" "}
+            <span className="text-[#E23774]">Terms of Service</span> &{" "}
+            <span className="text-[#E23774]">Privacy Policy</span>
+          </p>
         </div>
       </div>
     </>
