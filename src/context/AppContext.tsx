@@ -22,7 +22,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 
   async function fetchUser() {
     try {
-      const token = localStorage.getItem("Token");
+      const token = localStorage.getItem("token");
 
       const { data } = await axios.get(`${authService}/api/auth/me`, {
         headers: {

@@ -6,10 +6,13 @@ import { authService } from "../main";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
+import { useAppData } from "../context/AppContext";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const {setUser, setIsAuth} = useAppData();
 
   //eslint-disable-next-line
   const responseGoogle = async (authResult: any) => {
@@ -19,11 +22,13 @@ const Login = () => {
         code: authResult["code"],
       });
 
-      localStorage.setItem("Token", result.data.token);
+      localStorage.setItem("token", result.data.token);
 
       toast.success(result.data.message);
 
       setLoading(false);
+      setUser(result.data.user)
+      setIsAuth(true);
       navigate("/");
     } catch (error) {
       console.log(error);
