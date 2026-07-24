@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { authService } from "../main";
-import type { AppContextType, User } from "../types";
+import type { AppContextType, LocationData, User } from "../types";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -20,6 +20,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [location, setLocation] = useState<LocationData>(null);
+  const [loadingLocation, setLoadingLocation] = useState(false);
+  const [city, setCity] = useState("Fetching Location...");
+
   async function fetchUser() {
     try {
       const token = localStorage.getItem("token");
@@ -29,7 +33,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUser(data.user);
+      setUser(data);
       setIsAuth(true);
     } catch (error) {
       console.log(error);
@@ -43,9 +47,46 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    if (!navigator.geolocation)
+      return alert("Please Allow Location To Continue");
+    setLoadingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+        );
+        const data = await res.json();
+
+        setLocation({
+          latitude,
+          longitude,
+          formattedAddress: data.display_name || "current location",
+        });
+
+        setCity(
+          data.address.city ||
+            data.address.town ||
+            data.address.village ||
+            "Your Location",
+        );
+      } catch (error) {
+        setLocation({
+          latitude,
+          longitude,
+          formattedAddress: "current Location",
+        });
+        setCity("Failed to load!");
+      }
+    });
+  }, []);
+
   return (
     <AppContext.Provider
-      value={{ isAuth, loading, setIsAuth, setLoading, setUser, user }}
+      value={{ isAuth, loading, setIsAuth, setLoading, setUser, user, location, loadingLocation, city }}
     >
       {children}
     </AppContext.Provider>
