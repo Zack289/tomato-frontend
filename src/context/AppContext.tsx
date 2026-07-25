@@ -20,7 +20,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [location, setLocation] = useState<LocationData>(null);
+  const [location, setLocation] = useState<LocationData | null>(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [city, setCity] = useState("Fetching Location...");
 
@@ -73,6 +73,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
             data.address.village ||
             "Your Location",
         );
+        setLoadingLocation(false);
       } catch (error) {
         setLocation({
           latitude,
@@ -80,6 +81,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           formattedAddress: "current Location",
         });
         setCity("Failed to load!");
+        setLoadingLocation(false);
       }
     });
   }, []);
