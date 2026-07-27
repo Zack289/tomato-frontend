@@ -15,7 +15,12 @@ const App = () => {
   const { user } = useAppData();
 
   if (user && user.role === "seller") {
-    return <Restaurant />;
+    return (
+      <>
+        <Restaurant />
+        <Toaster />
+      </>
+    );
   }
   return (
     <>

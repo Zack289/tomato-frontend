@@ -3,6 +3,7 @@ import type { IRestaurant } from "../types";
 import axios from "axios";
 import { restaurantService } from "../main";
 import AddRestaurant from "../components/AddRestaurant";
+import RestaurantProfile from "../components/RestaurantProfile";
 
 const Restaurant = () => {
   const [restaurant, setRestaurant] = useState<IRestaurant | null>(null);
@@ -23,6 +24,7 @@ const Restaurant = () => {
 
       if (data.token) {
         localStorage.setItem("token", data.token);
+        window.location.reload();
       }
     } catch (error) {
       console.error(error);
@@ -46,10 +48,18 @@ const Restaurant = () => {
   }
 
   if (!restaurant) {
-    return <AddRestaurant />;
+    return <AddRestaurant fetchMyRestaurant={fetchMyRestaurant} />;
   }
 
-  return <div>{restaurant.name}</div>;
+  return (
+    <div className="min-h-screen bg-gray-50 px-4 py-6 space-y-6">
+      <RestaurantProfile
+        restaurant={restaurant}
+        onUpdate={setRestaurant}
+        isSeller={true}
+      />
+    </div>
+  );
 };
 
 export default Restaurant;
