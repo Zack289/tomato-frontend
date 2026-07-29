@@ -54,6 +54,7 @@ const RestaurantProfile = ({ restaurant, isSeller, onUpdate }: props) => {
 
       onUpdate(data.restaurant);
       toast.success(data.message);
+      setEditMode(false);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log(error);
