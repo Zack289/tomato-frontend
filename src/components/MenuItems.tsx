@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { IMenuItem } from "../types";
 import { FiEyeOff } from "react-icons/fi";
-import { BsCart, BsEye } from "react-icons/bs";
+import { BsCartPlus, BsEye } from "react-icons/bs";
 import { BiTrash } from "react-icons/bi";
 import { VscLoading } from "react-icons/vsc";
 import axios from "axios";
@@ -124,7 +124,7 @@ const MenuItems = ({ items, onItemDeleted, isSeller }: MenuItemsProps) => {
                     {isLoading ? (
                       <VscLoading size={18} className="animate-spin" />
                     ) : (
-                      <BsCart size={18} className="" />
+                      <BsCartPlus size={18} className="" />
                     )}
                   </button>
                 )}
