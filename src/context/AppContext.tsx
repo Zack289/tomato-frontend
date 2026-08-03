@@ -74,10 +74,14 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   }, []);
 
   useEffect(() => {
-    if (user && user.role === "customer") {
-      fetchCart();
+    if (user?.role === "customer") {
+      void fetchCart();
+    } else {
+      setCart([]);
+      setSubTotal(0);
+      setQuantity(0);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!navigator.geolocation)

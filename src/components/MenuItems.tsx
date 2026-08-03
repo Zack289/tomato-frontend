@@ -122,7 +122,7 @@ const MenuItems = ({ items, onItemDeleted, isSeller }: MenuItemsProps) => {
               </div>
 
               <div className="flex items-center justify-between">
-                <p className="font-medium">£{item.price}</p>
+                <p className="font-medium">₨.{item.price}</p>
 
                 {isSeller && (
                   <div className="flex gap-2">
