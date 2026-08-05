@@ -90,9 +90,16 @@ const AddAddressPage = () => {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
       );
+      if (!res.ok) {
+        throw new Error(`Nominatim request failed: ${res.status}`);
+      }
       const data = await res.json();
-      setFormattedAddress(data.display_name || "");
-    } catch {
+      if (!data.display_name) {
+        throw new Error("No address found for this location");
+      }
+      setFormattedAddress(data.display_name);
+    } catch (error) {
+      // console.error("Reverse geocoding failed:", error);
       toast.error("Failed to fetch address");
     }
   };
@@ -109,7 +116,7 @@ const AddAddressPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log(data);
+      // console.log(data);
       setAddresses(data.addresses || []);
     } catch {
       toast.error("Failed to load addresses");
