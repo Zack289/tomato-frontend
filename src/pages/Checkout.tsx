@@ -3,8 +3,9 @@ import { useAppData } from "../context/AppContext";
 import axios from "axios";
 import { restaurantService, utilsService } from "../main";
 import { useNavigate } from "react-router-dom";
-import type { IRestaurant } from "../types";
+import type { ICart, IMenuItem, IRestaurant } from "../types";
 import toast from "react-hot-toast";
+import { BiCreditCard, BiLoader } from "react-icons/bi";
 
 interface Address {
   _id: string;
@@ -15,7 +16,7 @@ interface Address {
 const Checkout = () => {
   const navigate = useNavigate();
 
-  const { cart, subTotal, quantity } = useAppData();
+  const { cart, subTotal, quantity, fetchCart } = useAppData();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
 
@@ -45,7 +46,7 @@ const Checkout = () => {
           },
         );
 
-        setAddresses(data || []);
+        setAddresses(data.addresses || []);
       } catch (error) {
         console.log(error);
       } finally {
@@ -130,9 +131,10 @@ const Checkout = () => {
             });
 
             toast.success("Payment successful 🎉🍾");
-            navigate('/payment-success/'+ response.razorpay_payment_id)
+            fetchCart();
+            navigate("/payment-success/" + response.razorpay_payment_id);
           } catch (error) {
-            toast.error("Payment verification failed")
+            toast.error("Payment verification failed");
           }
         },
         theme: {
@@ -145,12 +147,147 @@ const Checkout = () => {
       razorpay.open();
     } catch (error) {
       console.log(error);
-      toast.error("Payment failed, please refresh page")
-    }finally{
-      setLoadingRazorpay(false)
+      toast.error("Payment failed, please refresh page");
+    } finally {
+      setLoadingRazorpay(false);
     }
   };
-  return <div>checkout</div>;
+
+  const payWithStripe = async () => {
+    try {
+      setLoadingStripe(true);
+
+      const order = await createOrder("stripe");
+
+      if (!order) return;
+
+      console.log("Stripe checkout", order);
+    } catch (error) {
+      console.log(error);
+      toast.error("Payment failed");
+    } finally {
+      setLoadingStripe(false);
+    }
+  };
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-6 space-y-6">
+      <h1 className="text-2xl font-bold text-[#E23744]">Checkout</h1>
+
+      <div className="rounded-xl bg-white p-4 shadow-sm ">
+        <h2 className="text-lg font-semibold">{restaurant.name}</h2>
+        <p className="text-sm text-gray-500">
+          {restaurant.autoLocation.formattedAddress}
+        </p>
+      </div>
+
+      <div className="rounded-xl bg-white p-4 shadow-sm space-y-3">
+        <h3 className="font-semibold">Delivery Address</h3>
+
+        {loadingAddress ? (
+          <p className="text-sm text-gray-500 ">Loading addresses...</p>
+        ) : addresses.length === 0 ? (
+          <p className="text-sm text-gray-500">
+            No address found. Please add one...
+          </p>
+        ) : (
+          addresses.map((add) => (
+            <label
+              key={add._id}
+              className={`flex gap-3 rounded-lg border p-3 cursor-pointer transition ${selectedAddressId === add._id ? "border-[#E23744] bg-red-50" : "hover:bg-gray-50"}`}
+            >
+              <input
+                type="radio"
+                checked={selectedAddressId === add._id}
+                onChange={() => setSelectedAddressId(add._id)}
+              />
+
+              <div className="">
+                <p className="text-sm font-medium">{add.formattedAddress}</p>
+                <p className="text-xs text-gray-500">{add.mobile}</p>
+              </div>
+            </label>
+          ))
+        )}
+      </div>
+
+      <div className="rounded-xl bg-white p-4 shadow-sm space-y-4">
+        <h3 className="font-semibold ">Order Summary</h3>
+
+        {cart.map((cartItem: ICart) => {
+          const item = cartItem.itemId as IMenuItem;
+
+          return (
+            <div className="flex justify-between text-sm" key={cartItem._id}>
+              <span>
+                {item.name} x {cartItem.quantity}
+              </span>
+
+              <span>Rs.{item.price * cartItem.quantity}</span>
+            </div>
+          );
+        })}
+
+        <hr />
+
+        <div className="flex justify-between text-sm">
+          <span>Items ({quantity})</span>
+          <span>Rs.{subTotal}</span>
+        </div>
+
+        <div className="flex justify-between text-sm">
+          <span>Delivery Fee</span>
+          <span>{deliveryFee === 0 ? "Free" : `Rs.${deliveryFee}`}</span>
+        </div>
+
+        <div className="flex justify-between text-sm">
+          <span>Platform Fee</span>
+          <span>Rs.{platformFee}</span>
+        </div>
+
+        {subTotal < 250 && (
+          <p className="text-xs text-gray-500">
+            Add Item Worth ₨.{250 - subTotal} more to get free delivery.
+          </p>
+        )}
+
+        <div className="flex justify-between text-base font-semibold border-t pt-2">
+          <span className="">Grand Total</span>
+          <span className="">₨. {grandTotal}</span>
+        </div>
+      </div>
+
+      <div className="rounded-xl bg-white p-4 shadow-sm space-y-3">
+        <h3 className="font-semibold">Payment Method</h3>
+
+        <button
+          disabled={!selectedAddressId || loadingRazorpay || creatingOrder}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2d7ff9] py-3 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50 cursor-pointer"
+          onClick={payWithRazorpay}
+        >
+          {loadingRazorpay ? (
+            <BiLoader size={18} className="animate-spin" />
+          ) : (
+            <BiCreditCard size={18} />
+          )}{" "}
+          Pay with Razorpay
+        </button>
+
+        {/* for stripe */}
+        <button
+          disabled={!selectedAddressId || loadingRazorpay || creatingOrder}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50 cursor-pointer"
+          onClick={payWithStripe}
+        >
+          {loadingRazorpay ? (
+            <BiLoader size={18} className="animate-spin" />
+          ) : (
+            <BiCreditCard size={18} />
+          )}{" "}
+          Pay with Stripe
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default Checkout;
