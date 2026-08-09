@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useAppData } from "../context/AppContext";
 import axios from "axios";
 import { restaurantService, utilsService } from "../main";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import type { ICart, IMenuItem, IRestaurant } from "../types";
 import toast from "react-hot-toast";
 import { BiCreditCard, BiLoader } from "react-icons/bi";
+import {loadStripe} from '@stripe/stripe-js'
 
 interface Address {
   _id: string;
@@ -16,7 +17,7 @@ interface Address {
 const Checkout = () => {
   const navigate = useNavigate();
 
-  const { cart, subTotal, quantity, fetchCart } = useAppData();
+  const { cart, subTotal, quantity } = useAppData();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
 
@@ -131,7 +132,6 @@ const Checkout = () => {
             });
 
             toast.success("Payment successful 🎉🍾");
-            fetchCart();
             navigate("/payment-success/" + response.razorpay_payment_id);
           } catch (error) {
             toast.error("Payment verification failed");
@@ -153,6 +153,10 @@ const Checkout = () => {
     }
   };
 
+  //pay with stripe
+
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+
   const payWithStripe = async () => {
     try {
       setLoadingStripe(true);
@@ -161,7 +165,23 @@ const Checkout = () => {
 
       if (!order) return;
 
-      console.log("Stripe checkout", order);
+      const {orderId} = order;
+
+     try {
+       const stripe = await stripePromise;
+
+       const {data} = await axios.post(`${utilsService}/api/payment/stripe/create`, {
+        orderId
+       });
+
+       if(data.url){
+        window.location.href = data.url
+       }else{
+        toast.error("Failed to create payment session")
+       }
+     } catch (error) {
+      toast.error("Payment failed")
+     }
     } catch (error) {
       console.log(error);
       toast.error("Payment failed");
@@ -274,11 +294,11 @@ const Checkout = () => {
 
         {/* for stripe */}
         <button
-          disabled={!selectedAddressId || loadingRazorpay || creatingOrder}
+          disabled={!selectedAddressId || loadingStripe || creatingOrder}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50 cursor-pointer"
           onClick={payWithStripe}
         >
-          {loadingRazorpay ? (
+          {loadingStripe ? (
             <BiLoader size={18} className="animate-spin" />
           ) : (
             <BiCreditCard size={18} />
