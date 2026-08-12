@@ -4,6 +4,7 @@ import { useSocket } from "../context/SocketCotext";
 import audio from "../assets/quack.mp3";
 import axios from "axios";
 import { restaurantService } from "../main";
+import OrderCard from "./OrderCard";
 
 const ACTIVE_STATUSES = [
   "placed",
@@ -132,9 +133,11 @@ const RestaurantOrders = ({ restaurantId }: { restaurantId: string }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeOrders.map((order) => (
-              <p key={order._id} className="">
-                {order._id}
-              </p>
+              <OrderCard
+                key={order._id}
+                order={order}
+                onStatusUpdate={fetchOrders}
+              />
             ))}
           </div>
         )}
@@ -150,9 +153,11 @@ const RestaurantOrders = ({ restaurantId }: { restaurantId: string }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {completdOrders.map((order) => (
-              <p key={order._id} className="">
-                {order._id}
-              </p>
+              <OrderCard
+                key={order._id}
+                order={order}
+                onStatusUpdate={fetchOrders}
+              />
             ))}
           </div>
         )}
