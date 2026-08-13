@@ -32,7 +32,7 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.log(error);
-      toast.error("Problem while logging");
+      toast.error("Problem while login");
       setLoading(false);
     }
   };
