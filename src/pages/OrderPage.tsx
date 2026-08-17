@@ -40,9 +40,11 @@ const OrderPage = () => {
     };
 
     socket.on("order:update", onOrderUpdate);
+    socket.on("order:rider_assigned", onOrderUpdate);
 
     return () => {
       socket.off("order:update", onOrderUpdate);
+      socket.off("order:rider_assigned", onOrderUpdate);
     };
   }, [socket]);
 
@@ -114,8 +116,12 @@ const OrderPage = () => {
           <span>Rs.{order.totalAmount}</span>
         </div>
 
-        <p className="text-xs text-gray-500">Payment Method: {order.paymentMethod}</p>
-        <p className="text-xs text-gray-500">Payment Status: {order.paymentStatus}</p>
+        <p className="text-xs text-gray-500">
+          Payment Method: {order.paymentMethod}
+        </p>
+        <p className="text-xs text-gray-500">
+          Payment Status: {order.paymentStatus}
+        </p>
       </div>
     </div>
   );
