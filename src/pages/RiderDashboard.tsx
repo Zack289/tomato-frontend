@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { BiUpload } from "react-icons/bi";
 import type { IOrder } from "../types";
 import audio from "../assets/faaahhh.mp3";
+import RiderOrderRequest from "../components/RiderOrderRequest";
 
 interface IRider {
   _id: string;
@@ -302,7 +303,7 @@ const RiderDashboard = () => {
             </p>
           </div>
 
-          {profile.isVerified && (
+          {profile.isVerified && !currentOrder && (
             <button
               onClick={toggleAvailability}
               disabled={toggling}
@@ -339,6 +340,23 @@ const RiderDashboard = () => {
           >
             Enable Sound
           </button>
+        </div>
+      )}
+
+      {profile.isAvailable && incomingOrders.length > 0 && (
+        <div className="mx-auto max-w-md px-4 space-y-3">
+          <h3 className="Font Semibold text-gray-700">Incoming Orders</h3>
+
+          {incomingOrders.map((id) => (
+            <RiderOrderRequest
+              key={id}
+              orderId={id}
+              onAccepted={() => {
+                fetchProfile();
+                fetchCurrentOrder();
+              }}
+            />
+          ))}
         </div>
       )}
     </div>
