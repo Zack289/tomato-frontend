@@ -9,6 +9,7 @@ import type { IOrder } from "../types";
 import audio from "../assets/faaahhh.mp3";
 import RiderOrderRequest from "../components/RiderOrderRequest";
 import RiderCurrentOrder from "../components/RiderCurrentOrder";
+import RiderOrderMap from "../components/RiderOrderMap";
 
 interface IRider {
   _id: string;
@@ -367,6 +368,8 @@ const RiderDashboard = () => {
             order={currentOrder}
             onStatusUpdate={fetchCurrentOrder}
           />
+
+          <RiderOrderMap order={currentOrder} />
         </div>
       )}
     </div>
