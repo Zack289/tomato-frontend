@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { adminService } from "../main";
+import AdminRestaurantCard from "../components/AdminRestaurantCard";
+import AdminRiderCard from "../components/AdminRiderCard";
 
 const Admin = () => {
   const [restaurant, setRestaurant] = useState<any[]>([]);
@@ -68,6 +70,34 @@ const Admin = () => {
           Riders
         </button>
       </div>
+
+      {tab === "restaurant" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {restaurant.length === 0 ? (
+            <p className="">No pending restuarants...</p>
+          ) : (
+            restaurant.map((r) => (
+              <AdminRestaurantCard
+                key={r._id}
+                restaurant={r}
+                onVerify={fetchData}
+              />
+            ))
+          )}
+        </div>
+      )}
+
+      {tab === "rider" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {riders.length === 0 ? (
+            <p className="">No pending riders...</p>
+          ) : (
+            riders.map((r) => (
+              <AdminRiderCard key={r._id} rider={r} onVerify={fetchData} />
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 };
