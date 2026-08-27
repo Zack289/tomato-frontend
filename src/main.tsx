@@ -8,12 +8,12 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider } from "./context/AppContext.tsx";
 import { SocketProvider } from "./context/SocketCotext.tsx";
 
-export const authService = "http://localhost:5000";
-export const restaurantService = "http://localhost:5001";
-export const utilsService = "http://localhost:5002";
-export const realtimeService = "http://localhost:5004";
-export const riderService = "http://localhost:5005";
-export const adminService = "http://localhost:5006";
+export const authService = "https://tomato-auth-sr8t.onrender.com";
+export const restaurantService = "https://tomato-restaurant-98z1.onrender.com";
+export const utilsService = "https://tomato-utils-525v.onrender.com";
+export const realtimeService = "https://tomato-realtime-bdsq.onrender.com";
+export const riderService = "https://tomato-rider-bctd.onrender.com";
+export const adminService = "https://tomato-admin-l06q.onrender.com";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
