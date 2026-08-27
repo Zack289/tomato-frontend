@@ -9,7 +9,7 @@ import { VscLoading } from "react-icons/vsc";
 import { BiMinus, BiPlus, BiTrash } from "react-icons/bi";
 
 const Cart = () => {
-  const { cart, subTotal, quantity, fetchCart } = useAppData();
+  const { cart, subTotal, fetchCart } = useAppData();
   const navigate = useNavigate();
 
   const [loadingItemId, setLoadingItemId] = useState<string | null>(null);

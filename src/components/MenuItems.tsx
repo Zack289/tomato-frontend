@@ -83,7 +83,7 @@ const MenuItems = ({ items, onItemDeleted, isSeller }: MenuItemsProps) => {
     } catch (error: any) {
       toast.error(error.response.data.message);
     } finally {
-      setLoadingItemId(false);
+      setLoadingItemId(null);
     }
   };
 
